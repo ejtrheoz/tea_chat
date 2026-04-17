@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tea-rag-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      AWS_REGION: ${AWS_REGION:-eu-west-3}
+      DB_HOST: ${DB_HOST:-database-1-instance-1.ch0oww68op5p.eu-west-3.rds.amazonaws.com}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-postgres}
+      DB_USER: ${DB_USER:-iam_user}
+      CSV_PATH: ${CSV_PATH:-wikipedia_tea_articles.csv}
+      BEDROCK_LLM_MODEL_ID: ${BEDROCK_LLM_MODEL_ID:-global.amazon.nova-2-lite-v1:0}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_EMBED_MODEL: ${GEMINI_EMBED_MODEL:-gemini-embedding-001}
+      EMBEDDING_DIM: ${EMBEDDING_DIM:-1536}
+      VECTOR_TOP_K: ${VECTOR_TOP_K:-4}
+      BM25_TOP_K: ${BM25_TOP_K:-4}
+    # If you use AWS profiles/SSO locally, this helps boto3 pick credentials in container.
+    volumes:
+      - ${HOME}/.aws:/root/.aws:ro
+    restart: unless-stopped
